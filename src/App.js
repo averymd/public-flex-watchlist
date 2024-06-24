@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Wishlist from './components/Wishlist';
+import Watchlist from './components/Watchlist';
 
 export default function App() {
   const queryClient = new QueryClient();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Wishlist />
+      <Watchlist />
     </QueryClientProvider>
   );
 }

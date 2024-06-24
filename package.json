@@ -24,9 +24,14 @@
   },
   "homepage": "https://github.com/averymd/public-plex-watchlist#readme",
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "@mui/x-date-pickers": "^7.7.1",
     "@tanstack/react-query": "^5.45.1",
-    "@tanstack/react-table": "^8.17.3",
     "axios": "^1.7.2",
+    "material-react-table": "^2.13.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rss-parser": "^3.13.0"
