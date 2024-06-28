@@ -12,6 +12,5 @@ export async function fetchPlexWatchlistFeed({ pageParam }) {
       ],
     },
   });
-  let result = rssParser.parseURL(pageParam);
-  return result;
+  return rssParser.parseURL(pageParam);
 }
