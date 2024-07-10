@@ -11,7 +11,7 @@ pipeline {
     DEPCHECK_SCAN_ACCOUNT = credentials('DEPCHECK_SCAN_ACCOUNT')
     DEPCHECK_CONNSTRING = credentials('DEPCHECK_CONNSTRING')
     SONATYPE_OSSINDEX_API_KEY = credentials('SONATYPE_OSSINDEX_API_KEY')
-    SONAR_SCANNER_OPTS = '-Xmx128m'
+    SONAR_SCANNER_OPTS = '-Xmx768m'
   }
   stages {
     stage('Install Python Virtual Enviroment') {

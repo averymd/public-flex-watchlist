@@ -39,7 +39,6 @@ export default function Watchlist() {
 
   return (
     <>
-      <h1>Plex Watchlist</h1>
       {!isPending && (
         <WatchlistTable
           items={justItems}
