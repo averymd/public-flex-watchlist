@@ -19,7 +19,7 @@ export default function WatchlistTable({
       ].map((keyword) => {
         return { label: keyword, value: keyword };
       }),
-    []
+    [items]
   );
 
   const columns = useMemo(
@@ -74,7 +74,7 @@ export default function WatchlistTable({
         filterVariant: 'multi-select',
       },
     ],
-    []
+    [keywordOptions]
   );
 
   const table = useMaterialReactTable({
@@ -98,3 +98,10 @@ export default function WatchlistTable({
 
   return <MaterialReactTable table={table} />;
 }
+
+WatchlistTable.propTypes = {
+  items: PropTypes.object.isRequired,
+  isLoadingItems: PropTypes.bool.isRequired,
+  isErrorLoading: PropTypes.bool.isRequired,
+  isPageLoading: PropTypes.bool.isRequired,
+};

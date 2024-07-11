@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Parser from 'rss-parser';
 
 export async function fetchPlexWatchlistFeed({ pageParam }) {
