@@ -39,7 +39,7 @@ export default function WatchlistTable({
         id: 'category',
         accessorFn: (row) => row.categories[0],
         filterVariant: 'select',
-        size: 100,
+        size: 125,
       },
       {
         header: 'Summary',
@@ -64,7 +64,7 @@ export default function WatchlistTable({
         ),
         minSize: 200,
         size: 400,
-        maxSize: 600,
+        maxSize: 700,
         filterSelectOptions: keywordOptions,
       },
       {
@@ -80,9 +80,11 @@ export default function WatchlistTable({
   const table = useMaterialReactTable({
     columns,
     data: items,
-    layoutMode: 'grid-no-grow',
+    layoutMode: 'semantic',
     filterFromLeafRows: true,
     enableFacetedValues: true,
+    enablePagination: false,
+    enableRowVirtualization: true,
     state: {
       isLoading: isLoadingItems,
       showAlertBanner: isErrorLoading,
@@ -91,7 +93,6 @@ export default function WatchlistTable({
     initialState: {
       showColumnFilters: true,
       showGlobalFilter: true,
-      pagination: { pageSize: 100, pageIndex: 0 },
     },
   });
 
