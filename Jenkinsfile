@@ -36,7 +36,7 @@ pipeline {
 
     stage('Deploy if tagged') {
       when {
-        tag pattern: '(\d+\.){3}', comparator: "REGEXP"
+        tag pattern: '(\\d+\\.){3}', comparator: "REGEXP"
       }
       steps {
         s3Upload profileName: 'Irrsinn.net Buckets',
