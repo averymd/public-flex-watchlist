@@ -1,0 +1,94 @@
+pipeline {
+  agent {
+      label 'python311 && amd64'
+  }
+  options {
+    quietPeriod(120)
+    disableConcurrentBuilds()
+  }
+  tools {nodejs "Node 20"}
+  environment {
+    DEPCHECK_SCAN_ACCOUNT = credentials('DEPCHECK_SCAN_ACCOUNT')
+    DEPCHECK_CONNSTRING = credentials('DEPCHECK_CONNSTRING')
+    SONATYPE_OSSINDEX_API_KEY = credentials('SONATYPE_OSSINDEX_API_KEY')
+    SONAR_SCANNER_OPTS = '-Xmx768m'
+  }
+  stages {
+    stage('Install Python Virtual Enviroment') {
+      steps {
+        sh 'echo $PATH'
+        sh 'python3.11 -m venv env'
+      }
+    }
+
+    stage('Install Application Dependencies') {
+      steps {
+        sh '''
+          . env/bin/activate
+          pip3.11 install --upgrade pip
+          pip3.11 install -r requirements.txt
+          corepack enable
+          npm install
+          mkdir reports
+          deactivate
+          '''
+      }
+    }
+
+    stage('ESLint') {
+      steps {
+        script {
+          try {
+            sh ". env/bin/activate && npx eslint . -c eslint.config.mjs -o reports/eslint.json --format json || true"
+            sh ". env/bin/activate && npx eslint . -c eslint.config.mjs -o reports/eslint-checkstyle.report --format checkstyle || true"
+          }
+          finally {
+            recordIssues tool: esLint(pattern: '**/reports/eslint-checkstyle.report'), aggregatingResults: true
+          }
+        }
+      }
+    }
+
+    stage('OWASP Dependency-Check Vulnerabilities') {
+      steps {
+        sh 'curl -O https://jdbc.postgresql.org/download/postgresql-42.7.3.jar'
+        dependencyCheck odcInstallation: 'DepCheck',
+          additionalArguments: '--project "Plex Watchlist" -o ./reports -f XML -f HTML -f JSON -f CSV --noupdate --connectionString $DEPCHECK_CONNSTRING --dbDriverPath postgresql-42.7.3.jar --dbDriverName org.postgresql.Driver --dbUser $DEPCHECK_SCAN_ACCOUNT_USR --dbPassword $DEPCHECK_SCAN_ACCOUNT_PSW --ossIndexUsername averymd@irrsinn.net --ossIndexPassword $SONATYPE_OSSINDEX_API_KEY'
+        dependencyCheckPublisher pattern: 'reports/dependency-check-report.xml'
+      }
+    }
+
+    stage('SonarQube Analysis') {
+      environment {
+        scannerHome = tool 'SonarQubeDefault'
+      }
+      steps {
+        withSonarQubeEnv('Personal SonarQube') {
+          sh """
+            . env/bin/activate
+            ${scannerHome}/bin/sonar-scanner \
+              -Dsonar.dependencyCheck.jsonReportPath=reports/dependency-check-report.json \
+              -Dsonar.dependencyCheck.xmlReportPath=reports/dependency-check-report.xml \
+              -Dsonar.dependencyCheck.htmlReportPath=reports/dependency-check-report.html \
+              -Dsonar.eslint.reportPaths=reports/eslint.json
+            deactivate
+            """
+        }
+      }
+    }
+  }
+  post {
+    cleanup {
+      cleanWs()
+      dir("${env.WORKSPACE}@tmp") {
+        deleteDir()
+      }
+      dir("${env.WORKSPACE}@2") {
+        deleteDir()
+      }
+      dir("${env.WORKSPACE}@2@tmp") {
+        deleteDir()
+      }
+    }
+  }
+}
