@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPlexWatchlistFeed } from '../../api/plexApi';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import React from 'react';
 import WatchlistTable from '../WatchlistTable';
 
@@ -8,6 +8,7 @@ export default function Watchlist() {
   const {
     data,
     isPending,
+    isLoading,
     isLoadingError,
     fetchNextPage,
     hasNextPage,
@@ -18,15 +19,34 @@ export default function Watchlist() {
     queryFn: fetchPlexWatchlistFeed,
     initialPageParam: process.env.BASE_RSS_FEED,
     getNextPageParam: (lastPage) => lastPage?.paginationLinks?.next,
+    refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    if (!isFetching && !isFetchingNextPage && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [isFetching, isFetchingNextPage, hasNextPage, fetchNextPage]);
+  let loadMoreItems = useCallback(
+    (containerRefElement) => {
+      // if (containerRefElement) {
+      // const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+      //once the user has scrolled within 400px of the bottom of the table, fetch more data if we can
 
-  const justItems = useMemo(
+      if (
+        // scrollHeight - scrollTop - clientHeight < 400 &&
+        !isFetching &&
+        hasNextPage
+      ) {
+        fetchNextPage();
+      }
+      // }
+    },
+    [fetchNextPage, isFetching, hasNextPage]
+  );
+
+  useEffect(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      loadMoreItems();
+    }
+  }, [loadMoreItems, hasNextPage, isFetchingNextPage, data]);
+
+  const flatItems = useMemo(
     () => data?.pages?.flatMap((row) => row.items) ?? [],
     [data]
   );
@@ -35,10 +55,11 @@ export default function Watchlist() {
     <>
       {!isPending && (
         <WatchlistTable
-          items={justItems}
-          isLoadingItems={isFetching}
+          items={flatItems}
+          isLoadingItems={isLoading}
           isErrorLoading={isLoadingError}
           isPageLoading={isFetchingNextPage}
+          loadMoreItems={loadMoreItems}
         />
       )}
     </>
