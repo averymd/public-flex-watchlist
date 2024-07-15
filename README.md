@@ -1,2 +1,5 @@
-# public-plex-watchlist
-Turn your Plex Watchlist RSS feed into an interface non-Plex folks can search and filter
+# Public Plex Watchlist
+
+Turn your Plex Watchlist RSS feed into an interface non-Plex folks can search and filter.
+
+[Changelog](/CHANGELOG.md)

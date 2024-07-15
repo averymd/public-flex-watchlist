@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPlexWatchlistFeed } from '../../api/plexApi';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import React from 'react';
 import WatchlistTable from '../WatchlistTable';
 
@@ -24,15 +24,7 @@ export default function Watchlist() {
 
   let loadMoreItems = useCallback(
     (containerRefElement) => {
-      // if (containerRefElement) {
-      // const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-      //once the user has scrolled within 400px of the bottom of the table, fetch more data if we can
-
-      if (
-        // scrollHeight - scrollTop - clientHeight < 400 &&
-        !isFetching &&
-        hasNextPage
-      ) {
+      if (!isFetching && hasNextPage) {
         fetchNextPage();
       }
       // }

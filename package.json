@@ -1,6 +1,6 @@
 {
   "name": "public-plex-watchlist",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Turn your Plex Watchlist RSS feed into an interface non-Plex folks can search and filter.",
   "source": "src/index.html",
   "scripts": {
